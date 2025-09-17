@@ -1,5 +1,7 @@
 using System;
+using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 
 namespace Lab;
 
@@ -66,5 +68,12 @@ public static class Utils
             Log($"Failed to parse double: {e.Message}");
             return null;
         }
+    }
+
+    public static T Pop<T>(this List<T> ls)
+    {
+        T value = ls[0];
+        ls.RemoveAt(0);
+        return value;
     }
 }
