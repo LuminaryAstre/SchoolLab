@@ -1,4 +1,5 @@
 using System;
+using System.Runtime.CompilerServices;
 
 namespace Lab;
 
@@ -8,20 +9,18 @@ public enum ClampMethod
     Length = 1
 }
 
-public class Vector2I
+public struct Vector2I
 {
     public int x;
     public int y;
 
-    public float Length => MathF.Sqrt(x * x + y * y);
+    public readonly float Length => MathF.Sqrt(x * x + y * y);
 
     public Vector2I(int x, int y)
     {
         this.x = x;
         this.y = y;
     }
-
-    public Vector2I Copy() => this * 1;
 
     public Vector2I Conform(int maxX, int maxY)
     {
@@ -32,27 +31,27 @@ public class Vector2I
 
     public Vector2I Conforming(int maxX, int maxY)
     {
-        return Copy().Conform(maxX, maxY);
+        return Conform(maxX, maxY);
     }
 
     public Vector2I Clamp(int min, int max, ClampMethod method = ClampMethod.Individual)
     {
         if (method == ClampMethod.Individual)
         {
-                x = Math.Clamp(x, min, max);
-                y = Math.Clamp(y, min, max);
-                return this;
+            x = Math.Clamp(x, min, max);
+            y = Math.Clamp(y, min, max);
+            return this;
         }
 
-        int factor = (int)Math.Floor(Math.Clamp((int)Length,  min, max) / Length);
+        int factor = (int)Math.Floor(Math.Clamp((int)Length, min, max) / Length);
         x *= factor;
         y *= factor;
         return this;
     }
 
-    public Vector2I Clamped(int min, int max, ClampMethod method = ClampMethod.Individual)
+    public readonly Vector2I Clamped(int min, int max, ClampMethod method = ClampMethod.Individual)
     {
-        return (this * 1).Clamp(min, max, method);
+        return new Vector2I(x, y).Clamp(min, max, method);
     }
 
     public Vector2I Apply(Func<int, int?> cb)
@@ -62,19 +61,40 @@ public class Vector2I
         return this;
     }
 
-    public Vector2I Applied(Func<int, int?> cb)
+    public readonly Vector2I Applied(Func<int, int?> cb)
     {
-        return Copy().Apply(cb);
+        return new Vector2I(x, y).Apply(cb);
     }
 
-    public override bool Equals(object? obj)
+    public readonly override bool Equals(object? obj)
     {
         return obj?.GetType() == this.GetType() && this.Equals((Vector2I)obj);
     }
 
-    protected bool Equals(Vector2I other)
+    public readonly bool Equals(Vector2I other)
     {
         return x == other.x && y == other.y;
+    }
+
+    public override int GetHashCode()
+    {
+        unchecked
+        {
+            int hash = 17;
+            hash = (hash * 23) + x.GetHashCode();
+            hash = (hash * 23) + y.GetHashCode();
+            return hash;
+        }
+    }
+
+    public static bool operator ==(Vector2I left, Vector2I right)
+    {
+        return left.Equals(right);
+    }
+
+    public static bool operator !=(Vector2I left, Vector2I right)
+    {
+        return !left.Equals(right);
     }
 
     public static Vector2I operator +(Vector2I a, Vector2I b)
