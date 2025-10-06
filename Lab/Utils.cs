@@ -7,18 +7,23 @@ namespace Lab;
 
 public static class Utils
 {
+    private static bool _reprompt = false;
     public static bool YesNo(string? msg)
     {
-        Console.Write($"|: {msg} [y/n] ");
+        Console.Write(_reprompt ? "\b \b" : $"|: {msg} [y/n] ");
         bool value;
 
         ConsoleKeyInfo key = Console.ReadKey();
-        Console.Write("\n");
         if (key.Key != ConsoleKey.Y && key.Key != ConsoleKey.N)
+        {
+            _reprompt = true;
             value = YesNo(msg);
-        else
+        } else {
+            Console.Write("\n");
             value = key.Key == ConsoleKey.Y;
+        }
 
+        _reprompt = false;
         return value;
     }
 

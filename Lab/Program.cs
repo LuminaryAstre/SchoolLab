@@ -11,6 +11,7 @@ class Program
     public static void Main(string[] args)
     {
         CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
+        bool debug = Utils.YesNo("Enable additional logging for LabManager?");
         var labs = typeof(Program).Assembly.GetTypes()
             .Where(p => typeof(IBaseLab).IsAssignableFrom(p))
             .Where(p => !p.IsInterface)
@@ -25,11 +26,13 @@ class Program
                 Match m = Regex.Match(lab.Name, @"Assignment(\d+)_(.+)");
                 string name = $"{m.Groups[1]}.{m.Groups[2]}".Replace("_", "-");
                 LabManager.Register(name, instance);
-                Utils.Log($"Registering lab {name} (./Impl/{lab.Name}.cs)");
+                if (debug)
+                    Utils.Log($"Registering lab {name} (./Impl/{lab.Name}.cs)");
             }
             catch (Exception e)
             {
-                Utils.Log($"Failed to register {lab.Name}:\n{e.Message}\n{e.StackTrace}");
+                if (debug)
+                    Utils.Log($"Failed to register {lab.Name}:\n{e.Message}\n{e.StackTrace}");
             }
         }
         
@@ -57,6 +60,12 @@ class Program
             if (key.ToLowerInvariant() == "clear")
             {
                 Console.Clear();
+                goto start;
+            }
+
+            if (!LabManager.Exists(key))
+            {
+                Utils.Log("Lab does not exist! (Perhaps it failed to load? Perhaps enable additional logs.)");
                 goto start;
             }
             try

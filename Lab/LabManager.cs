@@ -9,6 +9,8 @@ public static class LabManager
 {
     public static Dictionary<string, IBaseLab> RegisteredLabs = new();
 
+    public static bool Exists(string key) => RegisteredLabs.ContainsKey(key);
+    
     public static void ExecuteLab(string key)
     {
         if (RegisteredLabs.ContainsKey(key))
