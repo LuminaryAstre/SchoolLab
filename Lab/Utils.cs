@@ -55,35 +55,7 @@ public static class Utils
         Console.Write(msg);
         return Console.ReadLine() ?? "";
     }
-
-    public static string IntToBinary(int num, bool little)
-    {
-        BitArray res;
-        if (num is <= sbyte.MaxValue and >= sbyte.MinValue)
-        {
-            res = new BitArray([(sbyte)num]);
-        }
-        else if (num is <= short.MaxValue and >= short.MinValue)
-        {
-            res = new BitArray([(short)num]);
-        }
-        else
-        {
-            res = new BitArray([num]);
-        }
-        string output = "";
-        for (int i = 0; i < res.Length; i++)
-        {
-            bool v = res.Get(i);
-            output += v ? "1" : "0";
-        }
-
-        if (!little)
-            output = new string(output.ToCharArray().Reverse().ToArray());
-
-        return output;
-    }
-
+    
     public static int? PromptInt(string msg)
     {
         string input = PromptString(msg);
