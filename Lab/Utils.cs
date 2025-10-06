@@ -1,21 +1,25 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
+using System.Text;
 
 namespace Lab;
 
 public static class Utils
 {
-    public static string Output = "";
+    private const string CYAN = "\x1B[36m";
+    private const string DEFAULT = "\x1B[0m";
+
+    private static readonly StringBuilder outputBuffer = new();
+
+    public static bool DebugLoggingEnabled { get; set; }
+
     public static bool YesNo(string? msg)
     {
         Console.Write($"|: {msg} [y/n] :|: ");
         while (true)
         {
             ConsoleKeyInfo key = Console.ReadKey();
-            if (key.Key == ConsoleKey.Y || key.Key == ConsoleKey.N)
+            if (key.Key is ConsoleKey.Y or ConsoleKey.N)
             {
                 Console.Write("\n");
                 return key.Key == ConsoleKey.Y;
@@ -28,7 +32,9 @@ public static class Utils
     public static void Write(string msg)
     {
         Console.Write(msg);
-        Output += msg;
+        // This seems to be the only time output is appended to.
+        // I'll assume an unfinished feature :)
+        outputBuffer.Append(msg);
     }
 
     public static void WriteLine(string msg)
@@ -38,7 +44,7 @@ public static class Utils
 
     public static void Log(string msg)
     {
-        if (msg.IndexOf("\n", StringComparison.InvariantCulture) == -1)
+        if (!msg.Contains('\n', StringComparison.InvariantCulture))
         {
             Console.WriteLine($"// {msg}");
         }
@@ -50,38 +56,49 @@ public static class Utils
         }
     }
 
+    public static void LogDebug(string msg)
+    {
+        if (!DebugLoggingEnabled)
+        {
+            return;
+        }
+
+        // Cyan is just a personal preference for "debugging colors".
+        // You can use another color if you'd like.
+        Log(string.Concat(CYAN, msg, DEFAULT));
+    }
+
     public static string PromptString(string msg)
     {
         Console.Write(msg);
-        return Console.ReadLine() ?? "";
+        return Console.ReadLine() ?? string.Empty;
     }
-    
+
     public static int? PromptInt(string msg)
     {
         string input = PromptString(msg);
-        try
+
+        // Exceptions are super slow. Unless you wanted the parsing fault reason...
+        if (!int.TryParse(input, out int value))
         {
-            return Int32.Parse(input, NumberStyles.Integer);
-        }
-        catch (FormatException e)
-        {
-            Log($"Failed to parse integer: {e.Message}");
+            Log($"Failed to parse double. Check formatting.");
             return null;
         }
+
+        return value;
     }
 
     public static double? PromptDouble(string msg)
     {
         string input = PromptString(msg);
-        try
+
+        if (!double.TryParse(input, out double value))
         {
-            return Double.Parse(input);
-        }
-        catch (FormatException e)
-        {
-            Log($"Failed to parse double: {e.Message}");
+            Log($"Failed to parse double. Check formatting.");
             return null;
         }
+
+        return value;
     }
 
     public static T Pop<T>(this List<T> ls, int index = 0)

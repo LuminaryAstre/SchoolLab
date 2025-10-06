@@ -1,7 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Lab.Impl;
 
@@ -12,7 +10,7 @@ public class Assignment2_1 : IBaseLab
     private List<Vector2I> Segments = [];
     private readonly string InstructionMessage = "~  :|:  W/A/S/D to move.   :|:   Q to exit.";
     private readonly int SegmentLength = 12;
-    
+
     public void Execute()
     {
         Console.Clear();
@@ -43,9 +41,9 @@ public class Assignment2_1 : IBaseLab
 
             currentPos.Conform(res.x - 1, res.y - 2);
             currentPos.Apply(i => Math.Max(i, 0));
-            if (currentPos.Equals(lastPos) || Segments.Find(x => currentPos.Equals(x)) != null)
+            if (currentPos.Equals(lastPos) || Segments.Find(x => currentPos.Equals(x)) != default)
             {
-                currentPos = lastPos.Copy();
+                currentPos = lastPos;
                 Console.SetCursorPosition(0, res.y - 1);
                 Console.Write(InstructionMessage);
                 Console.SetCursorPosition(0, res.y - 1);
@@ -60,15 +58,15 @@ public class Assignment2_1 : IBaseLab
 
             Console.SetCursorPosition(lastPos.x, lastPos.y);
             Console.Write("#");
-            Segments.Add(lastPos.Copy());
-            lastPos = currentPos.Copy();
+            Segments.Add(lastPos);
+            lastPos = currentPos;
             Console.SetCursorPosition(currentPos.x, currentPos.y);
             Console.Write("@");
             Console.SetCursorPosition(0, res.y - 1);
             Console.Write(InstructionMessage);
             Console.SetCursorPosition(0, res.y - 1);
         }
-        exit:
+    exit:
         Console.WriteLine("Exiting...");
     }
 

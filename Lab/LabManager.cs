@@ -1,21 +1,19 @@
 using System;
 using System.Collections.Generic;
-using System.Reflection;
-using System.Threading.Tasks;
 
 namespace Lab;
 
 public static class LabManager
 {
-    public static Dictionary<string, IBaseLab> RegisteredLabs = new();
+    public static readonly Dictionary<string, IBaseLab> RegisteredLabs = [];
 
     public static bool Exists(string key) => RegisteredLabs.ContainsKey(key);
-    
+
     public static void ExecuteLab(string key)
     {
-        if (RegisteredLabs.ContainsKey(key))
+        if (RegisteredLabs.TryGetValue(key, out IBaseLab? value))
         {
-            RegisteredLabs[key].Execute();
+            value.Execute();
         }
         else
         {

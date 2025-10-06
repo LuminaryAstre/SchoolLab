@@ -2,57 +2,64 @@
 using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
-using Lab.Impl;
 
 namespace Lab;
 
-class Program
+partial class Program
 {
-    public static void Main(string[] args)
+    public static void Main()
     {
         CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
-        bool debug = Utils.YesNo("Enable additional logging for LabManager?");
+        Utils.DebugLoggingEnabled = Utils.YesNo("Enable additional logging for LabManager?");
+
         if (Utils.YesNo("View TODO list?"))
         {
             Utils.Log("- Implement tests for each assignment.\n    [X] Output capture\n    [ ] Input manipulation\n    [ ] User Interface for testing");
         }
+
         var labs = typeof(Program).Assembly.GetTypes()
-            .Where(p => typeof(IBaseLab).IsAssignableFrom(p))
-            .Where(p => !p.IsInterface)
+            .Where(p => typeof(IBaseLab).IsAssignableFrom(p) && !p.IsInterface)
             .ToList();
 
         foreach (var lab in labs)
         {
             try
             {
-                IBaseLab? instance = (IBaseLab)Activator.CreateInstance(lab);
-                if (instance == null) continue;
-                Match m = Regex.Match(lab.Name, @"Assignment(\d+)_(.+)");
-                string name = $"{m.Groups[1]}.{m.Groups[2]}".Replace("_", "-");
+                if (Activator.CreateInstance(lab) is not IBaseLab instance) continue;
+
+                Match m = InstanceRegisterRegex().Match(lab.Name);
+                string name = $"{m.Groups[1]}.{m.Groups[2]}".Replace('_', '-');
                 LabManager.Register(name, instance);
-                if (debug)
-                    Utils.Log($"Registering lab {name} (./Impl/{lab.Name}.cs)");
+                Utils.LogDebug($"Registering lab {name} (./Impl/{lab.Name}.cs)");
             }
             catch (Exception e)
             {
-                if (debug)
-                    Utils.Log($"Failed to register {lab.Name}:\n{e.Message}\n{e.StackTrace}");
+                Utils.LogDebug($"Failed to register {lab.Name}:\n{e.Message}\n{e.StackTrace}");
             }
         }
-        
-        start:
+
+        while (true)
+        {
+            MainLoop();
+        }
+    }
+
+    private static void MainLoop()
+    {
         Utils.Log("Input \"ls\" to list all available labs.\n\"clear\" to clear console.\n\"exit\" to terminate the program.\nInput the ID of a lab to execute it.");
         while (true)
         {
             Console.Write("|: ");
-            string key = (Console.ReadLine() ?? "").Trim();
+            string key = (Console.ReadLine() ?? string.Empty).Trim();
             if (key.Length == 0)
             {
                 Console.Write("\r");
                 continue;
             }
-            if (key.ToLowerInvariant() == "exit") break;
-            if (key.ToLowerInvariant() == "ls")
+
+            if (key.Equals("exit", StringComparison.InvariantCultureIgnoreCase)) break;
+
+            if (key.Equals("ls", StringComparison.InvariantCultureIgnoreCase))
             {
                 foreach (string k in LabManager.RegisteredLabs.Keys)
                 {
@@ -61,17 +68,18 @@ class Program
                 continue;
             }
 
-            if (key.ToLowerInvariant() == "clear")
+            if (key.Equals("clear", StringComparison.InvariantCultureIgnoreCase))
             {
                 Console.Clear();
-                goto start;
+                return;
             }
 
             if (!LabManager.Exists(key))
             {
                 Utils.Log("Lab does not exist! (Perhaps it failed to load? Perhaps enable additional logs.)");
-                goto start;
+                return;
             }
+
             try
             {
                 LabManager.ExecuteLab(key);
@@ -81,9 +89,12 @@ class Program
                 Console.WriteLine(e.Message);
                 Console.WriteLine(e.StackTrace);
             }
-            
-            if (!Utils.YesNo("\n// Program exited.\n// Back to start?")) break;
-            goto start;
+
+            if (!Utils.YesNo("\n// Program exited.\n// Back to start?"))
+                break;
         }
     }
+
+    [GeneratedRegex(@"Assignment(\d+)_(.+)")]
+    private static partial Regex InstanceRegisterRegex();
 }
