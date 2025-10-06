@@ -71,4 +71,9 @@ public class Assignment2_1 : IBaseLab
         exit:
         Console.WriteLine("Exiting...");
     }
+
+    public bool Test()
+    {
+        throw new NotImplementedException();
+    }
 }

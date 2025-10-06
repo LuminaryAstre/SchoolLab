@@ -17,4 +17,9 @@ public class Assignment2_2 : IBaseLab
         
         Console.WriteLine($"{input} can NOT be cleanly divided!\nRemainder on 3: {remainder3}\nRemainder on 7: {remainder7}");
     }
+
+    public bool Test()
+    {
+        throw new NotImplementedException();
+    }
 }

@@ -9,4 +9,9 @@ public class Assignment3_2 : IBaseLab
         Console.WriteLine("I literally already made this. Executing 1.0-improved...");
         LabManager.ExecuteLab("1.0-improved");
     }
+
+    public bool Test()
+    {
+        throw new NotImplementedException();
+    }
 }

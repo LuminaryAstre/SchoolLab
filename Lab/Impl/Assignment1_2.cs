@@ -11,4 +11,9 @@ public class Assignment1_2 : IBaseLab
         double a = Math.PI * r * r;
         Console.WriteLine($"Circumference: {o}\nArea: {a}");
     }
+
+    public bool Test()
+    {
+        throw new NotImplementedException();
+    }
 }

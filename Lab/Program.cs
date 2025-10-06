@@ -12,6 +12,10 @@ class Program
     {
         CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
         bool debug = Utils.YesNo("Enable additional logging for LabManager?");
+        if (Utils.YesNo("View TODO list?"))
+        {
+            Utils.Log("- Implement tests for each assignment.\n    [X] Output capture\n    [ ] Input manipulation\n    [ ] User Interface for testing");
+        }
         var labs = typeof(Program).Assembly.GetTypes()
             .Where(p => typeof(IBaseLab).IsAssignableFrom(p))
             .Where(p => !p.IsInterface)

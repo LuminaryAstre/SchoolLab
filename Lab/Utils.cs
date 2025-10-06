@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -7,24 +8,32 @@ namespace Lab;
 
 public static class Utils
 {
-    private static bool _reprompt = false;
+    public static string Output = "";
     public static bool YesNo(string? msg)
     {
-        Console.Write(_reprompt ? "\b \b" : $"|: {msg} [y/n] ");
-        bool value;
-
-        ConsoleKeyInfo key = Console.ReadKey();
-        if (key.Key != ConsoleKey.Y && key.Key != ConsoleKey.N)
+        Console.Write($"|: {msg} [y/n] :|: ");
+        while (true)
         {
-            _reprompt = true;
-            value = YesNo(msg);
-        } else {
-            Console.Write("\n");
-            value = key.Key == ConsoleKey.Y;
-        }
+            ConsoleKeyInfo key = Console.ReadKey();
+            if (key.Key == ConsoleKey.Y || key.Key == ConsoleKey.N)
+            {
+                Console.Write("\n");
+                return key.Key == ConsoleKey.Y;
+            }
 
-        _reprompt = false;
-        return value;
+            if (key.KeyChar != '\0') Console.Write("\b \b");
+        }
+    }
+
+    public static void Write(string msg)
+    {
+        Console.Write(msg);
+        Output += msg;
+    }
+
+    public static void WriteLine(string msg)
+    {
+        Write(msg + "\n");
     }
 
     public static void Log(string msg)
@@ -45,6 +54,34 @@ public static class Utils
     {
         Console.Write(msg);
         return Console.ReadLine() ?? "";
+    }
+
+    public static string IntToBinary(int num, bool little)
+    {
+        BitArray res;
+        if (num is <= sbyte.MaxValue and >= sbyte.MinValue)
+        {
+            res = new BitArray([(sbyte)num]);
+        }
+        else if (num is <= short.MaxValue and >= short.MinValue)
+        {
+            res = new BitArray([(short)num]);
+        }
+        else
+        {
+            res = new BitArray([num]);
+        }
+        string output = "";
+        for (int i = 0; i < res.Length; i++)
+        {
+            bool v = res.Get(i);
+            output += v ? "1" : "0";
+        }
+
+        if (!little)
+            output = new string(output.ToCharArray().Reverse().ToArray());
+
+        return output;
     }
 
     public static int? PromptInt(string msg)
@@ -75,10 +112,10 @@ public static class Utils
         }
     }
 
-    public static T Pop<T>(this List<T> ls)
+    public static T Pop<T>(this List<T> ls, int index = 0)
     {
-        T value = ls[0];
-        ls.RemoveAt(0);
+        T value = ls[index];
+        ls.RemoveAt(index);
         return value;
     }
 }

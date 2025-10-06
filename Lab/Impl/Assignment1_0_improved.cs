@@ -20,4 +20,9 @@ public class Assignment1_0_improved : IBaseLab
             Console.WriteLine(output);
         }
     }
+
+    public bool Test()
+    {
+        throw new NotImplementedException();
+    }
 }

@@ -15,7 +15,12 @@ public class Assignment1_0 : IBaseLab
             bool spaceAtStart = i % 2 != 0;
             string output = string.Concat(Enumerable.Repeat("* ", AsterCount));
             if (spaceAtStart) output = $" {output}";
-            Console.WriteLine(output);
+            Utils.WriteLine(output);
         }
+    }
+
+    public bool Test()
+    {
+        throw new NotImplementedException();
     }
 }

@@ -17,4 +17,9 @@ public class Assignment3_0 : IBaseLab
 
         Console.Write('\n');
     }
+
+    public bool Test()
+    {
+        throw new NotImplementedException();
+    }
 }

@@ -10,27 +10,37 @@ public class Assignment2_0 : IBaseLab
         if (age <= 12)
         {
             Console.WriteLine("WHITE");
-            return;
+            goto end;
         }
 
         if (age <= 18)
         {
+            Console.ForegroundColor = ConsoleColor.Green;
             Console.WriteLine("GREEN");
-            return;
+            goto end;
         }
 
         if (age <= 25)
         {
+            Console.ForegroundColor = ConsoleColor.Red;
             Console.WriteLine("RED");
-            return;
+            goto end;
         }
 
         if (age <= 99)
         {
+            Console.ForegroundColor = ConsoleColor.Blue;
             Console.WriteLine("BLUE");
-            return;
+            goto end;
         }
-        
+
         Console.WriteLine("INVALID");
+        end:
+        Console.ForegroundColor = ConsoleColor.White;
+    }
+
+    public bool Test()
+    {
+        throw new NotImplementedException();
     }
 }
