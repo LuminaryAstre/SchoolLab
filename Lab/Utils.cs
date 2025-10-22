@@ -68,6 +68,11 @@ public static class Utils
             Log($"Failed to parse integer: {e.Message}");
             return null;
         }
+        catch (OverflowException e)
+        {
+            Log($"Value was too large to be parsed as an Int32.");
+            return null;
+        }
     }
 
     public static double? PromptDouble(string msg)
