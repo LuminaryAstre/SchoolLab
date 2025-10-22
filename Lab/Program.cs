@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Globalization;
 using System.Linq;
+using System.Reflection.Metadata.Ecma335;
 using System.Text.RegularExpressions;
 using Lab.Impl;
 
@@ -14,7 +15,7 @@ class Program
         bool debug = Utils.YesNo("Enable additional logging for LabManager?");
         if (Utils.YesNo("View TODO list?"))
         {
-            Utils.Log("- Implement tests for each assignment.\n    [X] Output capture\n    [ ] Input manipulation\n    [ ] User Interface for testing");
+            Utils.Log("- [ ] Implement tests for each assignment.\n    [X] Output capture\n    [ ] Input manipulation\n    [ ] User Interface for testing\n- [ ] Improve multi-line logging.");
         }
         var labs = typeof(Program).Assembly.GetTypes()
             .Where(p => typeof(IBaseLab).IsAssignableFrom(p))
@@ -44,6 +45,12 @@ class Program
         Utils.Log("Input \"ls\" to list all available labs.\n\"clear\" to clear console.\n\"exit\" to terminate the program.\nInput the ID of a lab to execute it.");
         while (true)
         {
+            if (LabManager.Exists("0.0"))
+            {
+                LabManager.ExecuteLab("0.0");
+                Console.ReadKey();
+                return;
+            }
             Console.Write("|: ");
             string key = (Console.ReadLine() ?? "").Trim();
             if (key.Length == 0)

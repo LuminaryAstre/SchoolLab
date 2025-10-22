@@ -9,8 +9,17 @@ public class Assignment4_3 : IBaseLab
         string binary = Utils.PromptString("|: Input binary :|: ");
         try
         {
-            int res = Convert.ToInt32(binary, 2);
-            Utils.WriteLine($"Converted to {res}");
+            uint output = 0;
+            for (int i = 0; i < binary.Length; i++)
+            {
+                bool bit = binary[binary.Length - i - 1] == '1';
+                if (!bit && binary[binary.Length - i - 1] != '0')
+                    throw new ArgumentException(
+                        "Found non-binary character! We don't support trinary in this function.");
+                output |= (uint)(bit ? 1 : 0) << i;
+            }
+
+            Console.WriteLine(output);
         }
         catch (Exception e)
         {
